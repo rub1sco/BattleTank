@@ -1,7 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankAimingComponent.h"
+#include "TankTurret.h" //
 #include "TankBarrel.h"
+#include "TankTurret.h"
+
+
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
@@ -16,16 +20,21 @@ UTankAimingComponent::UTankAimingComponent()
 
 
 void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet){
-    
     Barrel = BarrelToSet;
     
-    
+}
+
+
+void UTankAimingComponent::SetTurretReference(UTankTurret* TurretToSet){
+    Turret = TurretToSet; //
 }
 
 
 void UTankAimingComponent::AimAt(FVector OutHitLocation, float LaunchSpeed)
 {
+    //Protecting pointers
     if(!Barrel){return;}
+    if (!Turret){return;} //
     
     FVector OutLaunchVelocity(0);
     FVector StartLocation = Barrel-> GetSocketLocation(FName("Projectile"));
@@ -50,14 +59,8 @@ void UTankAimingComponent::AimAt(FVector OutHitLocation, float LaunchSpeed)
     {
         auto AimDirection = OutLaunchVelocity.GetSafeNormal();
         MoveBarrelTowards(AimDirection);
-        
-        auto Time = GetWorld() -> GetTimeSeconds();
-        UE_LOG(LogTemp, Warning, TEXT("%f Barrel Elevate called"), Time);
-        
     }
-    auto Time = GetWorld() -> GetTimeSeconds();
-    UE_LOG(LogTemp, Warning, TEXT("%f Barrel error"), Time);
-    
+    //else do nothing
 }
 
 
@@ -68,7 +71,7 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
     auto AimAsRotator = AimDirection.Rotation();
     auto DeltaRotator = AimAsRotator - BarrelRotation;
     
-    Barrel -> Elevate(5); //TODO remove magic number
-
+    Barrel -> Elevate(DeltaRotator.Pitch);
+    Turret -> Rotate(DeltaRotator.Yaw);
     
 }
