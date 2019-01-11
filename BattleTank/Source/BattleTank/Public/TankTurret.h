@@ -22,12 +22,12 @@ public:
     
     
 private:
-    UPROPERTY(EditDefaultsOnly, Category = Setup)
+    UPROPERTY(EditDefaultsOnly, Category = "Setup")
     float MaxDegreesPerSecond = 10; //TODO find sensible default
     
-    UPROPERTY(EditDefaultsOnly, Category = Setup)
+    UPROPERTY(EditDefaultsOnly, Category = "Setup")
     float MaxRotateDegrees = 360;
     
-    UPROPERTY(EditDefaultsOnly, Category = Setup)
+    UPROPERTY(EditDefaultsOnly, Category = "Setup")
     float MinRotateDegrees = -360;
 };

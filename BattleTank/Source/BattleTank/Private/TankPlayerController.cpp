@@ -2,7 +2,7 @@
 
 #include "TankPlayerController.h"
 #include "TankAimingComponent.h"
-#include "Tank.h"
+
 
 
 
@@ -10,14 +10,14 @@
 void ATankPlayerController::BeginPlay(){
     Super::BeginPlay();
     
-    auto ControlledTank = GetControlledTank();
-    
-    if(!ControlledTank){
-        UE_LOG(LogTemp,Warning,TEXT("Not possesing a tank"));
+    auto AimingComponent = GetPawn() ->FindComponentByClass<UTankAimingComponent>();
+    if(ensure(AimingComponent))
+    {
+            FoundAimingComponent(AimingComponent);
     }
-    
-    else{
-        UE_LOG(LogTemp,Warning,TEXT("PlayerController Possesing: %s"), *(ControlledTank->GetName()));
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Cannot find AimingComponent"))
     }
 }
 
@@ -29,23 +29,21 @@ void ATankPlayerController::Tick(float DeltaTime){
     
     //aim towards crosshairs
     AimTowardsCrosshair();
-    
-    //UE_LOG(LogTemp,Warning, TEXT("Tick tock goes the clock"));
-}
 
-
-ATank* ATankPlayerController::GetControlledTank() const{
-   return Cast<ATank> (GetPawn());
 }
 
 
 void ATankPlayerController::AimTowardsCrosshair(){
-    if (!GetControlledTank()){return;}
+    
+    if(!GetPawn()){return;} //if not possesing
+    auto AimingComponent = GetPawn() ->FindComponentByClass<UTankAimingComponent>();
+    if(!ensure(AimingComponent)){return;}
     
     FVector OutHitLocation; // Out parameter
-    if(GetSightRayHitLocation(OutHitLocation)){
+    bool bGotHitLocation = GetSightRayHitLocation(OutHitLocation);
     
-        GetControlledTank()->AimAt(OutHitLocation);
+    if(bGotHitLocation){
+        AimingComponent->AimAt(OutHitLocation);
     }
 };
 
@@ -62,13 +60,10 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& OutHitLocation) cons
     FVector LookDirection;
     
     if(GetLookDirection(ScreenLocation,LookDirection)){
-        //Line-Trace along that look direction and see what we hit (up to max range)
-             //UE_LOG(LogTemp, Warning, TEXT("Look Direction: %S"), *LookDirection.ToString());
-        GetLookVectorHitLocation(LookDirection, OutHitLocation);
-    }
-    
 
-    return true;
+       return GetLookVectorHitLocation(LookDirection, OutHitLocation);
+    }
+    return false ;
 }
 
        
@@ -94,4 +89,5 @@ bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVec
         return false;
     }
 };
+
 

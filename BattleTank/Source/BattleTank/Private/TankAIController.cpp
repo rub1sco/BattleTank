@@ -2,8 +2,6 @@
 
 #include "TankAIController.h"
 #include "TankAimingComponent.h"
-#include "Tank.h"
-
 
 
 void ATankAIController::BeginPlay()
@@ -17,18 +15,25 @@ void ATankAIController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
     
-    auto PlayerTank = Cast<ATank>(GetWorld() -> GetFirstPlayerController() -> GetPawn());
-    auto GetAITank = Cast<ATank>(GetPawn());
+    auto PlayerTank = GetWorld() -> GetFirstPlayerController() -> GetPawn();
+    auto ControlledTank = GetPawn();
     
-    if(PlayerTank){
+    if(ensure(PlayerTank)){
+        
         //Move towards player
+        MoveToActor(PlayerTank, AcceptedRadius);
+        
         
         //aim towards player
-        GetAITank->AimAt(PlayerTank->GetActorLocation());
+        auto AimingComponent = ControlledTank->FindComponentByClass<UTankAimingComponent>();
+        AimingComponent->AimAt(PlayerTank->GetActorLocation());
         
         
         //Fire if ready
-        GetAITank->Fire(); //TODO limit firing rate
+        if (AimingComponent->GetFiringState() == EFiringState::Locked)
+        {
+        AimingComponent->Fire(); //TODO limit firing rate
+        }
     }
     
 };
