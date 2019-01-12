@@ -22,6 +22,7 @@ protected:
     UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
     void FoundAimingComponent(UTankAimingComponent* AimingCompRef);
     
+    
 private:
     
     // Called every frame
@@ -31,6 +32,7 @@ private:
     
     //moves the barrel to hit where crosshair aims.
     void AimTowardsCrosshair();
+    void SetPawn(APawn* InPawn);
     
     bool GetSightRayHitLocation(FVector& OutHitLocation) const;
     bool GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const;
@@ -42,6 +44,10 @@ private:
     float CrosshairYLocation = 0.333;
     UPROPERTY(EditDefaultsOnly)
     float LineTraceRange = 100000;
+    
+    UFUNCTION()
+    void OnPossessedTankDeath();
+    
     
     
 };

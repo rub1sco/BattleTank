@@ -5,7 +5,7 @@
 #include "TankTurret.h" //
 #include "TankBarrel.h"
 #include "Runtime/Core/Public/Math/UnrealMathUtility.h"
-
+#include "Runtime/Engine/Classes/Engine/World.h"
 
 
 
@@ -147,6 +147,7 @@ void UTankAimingComponent::Fire()
 
             //Launch Projectile
             Projectile -> LaunchProjectile(LaunchSpeed);
+            LastFireTime = FPlatformTime::Seconds();
             RoundsLeft--;
             
         }
@@ -165,7 +166,7 @@ bool UTankAimingComponent::IsBarrelMoving()
 }
 
 
-int UTankAimingComponent::GetRoundsLeft()const
+int32 UTankAimingComponent::GetRoundsLeft()const
 {
     
     return RoundsLeft;
